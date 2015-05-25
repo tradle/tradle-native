@@ -11,6 +11,14 @@ var hackers = [
   {
     name: 'fs',
     regex: [
+      /bitkeeper-js\/package\.json/,
+      /glob\/package\.json/,
+      /random-access-file\/package\.json/,
+      /pump\/package\.json/,
+      /mime\/package\.json/,
+      /walk\/package\.json/,
+      /rimraf\/package\.json/,
+      /webtorrent\/package\.json/,
       /formidable\/package\.json/,
       /mkdirp\/package\.json/,
       /tradle-utils\/package\.json/,
@@ -20,8 +28,15 @@ var hackers = [
       /chained-obj\/package\.json/
     ],
     handler: function(file, contents) {
-      var pkg = JSON.parse(contents)
-      pkg.browser = pkg.browser || {}
+      var pkg
+      try {
+        pkg = JSON.parse(contents)
+      } catch (err) {
+        console.log('failed to parse:', file)
+        return
+      }
+
+      rewireMain(pkg)
       if (pkg.browser.fs !== 'react-native-level-fs') {
         pkg.browser.fs = 'react-native-level-fs'
         return JSON.stringify(pkg, null, 2)
@@ -31,13 +46,22 @@ var hackers = [
   {
     name: 'dgram',
     regex: [
+      /sock-jack\/package\.json/,
+      /utp\/package\.json/,
       /bittorrent-dht\/package\.json/,
       /zlorp\/package\.json/,
       /dns\.js\/package\.json/
     ],
     handler: function(file, contents) {
-      var pkg = JSON.parse(contents)
-      pkg.browser = pkg.browser || {}
+      var pkg
+      try {
+        pkg = JSON.parse(contents)
+      } catch (err) {
+        console.log('failed to parse:', file)
+        return
+      }
+
+      rewireMain(pkg)
       if (pkg.browser.dgram !== 'react-native-udp') {
         pkg.browser.dgram = 'react-native-udp'
         return JSON.stringify(pkg, null, 2)
@@ -81,3 +105,14 @@ finder.on('file', function (file) {
     }
   })
 });
+
+function rewireMain(pkg) {
+  if (typeof pkg.browser === 'string') {
+    var main = pkg.browser
+    pkg.browser = {}
+    pkg.browser[pkg.main] = main
+  }
+  else if (typeof pkg.browser === 'undefined') {
+    pkg.browser = {}
+  }
+}
