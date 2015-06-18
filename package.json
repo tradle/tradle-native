@@ -6,35 +6,28 @@
     "start": "react-native-webpack-server start",
     "hot": "HOT=1 react-native-webpack-server start --hot"
   },
-  "browser": {
-    "dgram": "react-native-udp",
-    "dns": "dns.js",
-    "fs": "react-native-level-fs"
-  },
   "dependencies": {
     "asyncstorage-down": "0.0.3",
-    "bitkeeper-js": "git://github.com/tradle/bitkeeper-js",
-    "blockloader": "git://github.com/mvayngrib/blockloader.git",
-    "chaindb": "git://github.com/mvayngrib/chaindb.git#dev",
-    "chained-obj": "git://github.com/tradle/chained-obj.git",
-    "dns.js": "^1.0.0",
-    "json-loader": "^0.5.1",
-    "p2p": "git://github.com/mvayngrib/zlorp.git#dev",
+    "bitkeeper-client-js": "git://github.com/tradle/bitkeeper-client-js",
+    "bittorrent-dht": "git://github.com/tradle/bittorrent-dht",
+    "blockloader": "git://github.com/mvayngrib/blockloader",
+    "chaindb": "git://github.com/mvayngrib/chaindb",
+    "chained-chat": "git://github.com/mvayngrib/chained-chat",
+    "midentity": "git://github.com/tradle/identity",
     "react": "^0.13.3",
-    "react-native": "0.4.2",
-    "react-native-level-fs": "git://github.com/tradle/react-native-level-fs.git",
-    "react-native-udp": "git://github.com/tradle/react-native-udp.git",
-    "rudp": "git://github.com/mvayngrib/node-rudp",
-    "zlorp": "git://github.com/mvayngrib/zlorp.git"
+    "react-native": "^0.4.4",
+    "tradle-test-helpers": "git://github.com/tradle/test-helpers",
+    "tradle-utils": "git://github.com/tradle/tradle-utils"
   },
   "devDependencies": {
     "babel": "^5.2.17",
     "babel-core": "^5.2.17",
     "babel-loader": "^5.0.0",
     "findit": "^2.0.0",
-    "node-libs-browser": "^0.5.0",
+    "json-loader": "^0.5.2",
+    "node-libs-browser": "git://github.com/mvayngrib/react-native-node-libs",
     "react-hot-loader": "^1.2.7",
-    "react-native-webpack-server": "^0.1.7",
+    "react-native-webpack-server": "^0.2.0",
     "shelljs": "^0.4.0",
     "webpack": "^1.9.4",
     "webpack-dev-server": "^1.8.2"

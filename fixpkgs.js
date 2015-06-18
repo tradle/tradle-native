@@ -4,8 +4,8 @@
 // shelljs.exec('force-dedupe-git-modules')
 var fs = require('fs')
 var find = require('findit')
-var path = require('path');
-var thisPkg = require('./package.json')
+var path = require('path')
+// var thisPkg = require('./package.json')
 
 // function loadDeps() {
 //   var pkgs = []
@@ -39,11 +39,31 @@ var hackers = [
   //   }
   // },
   {
+    name: 'non-browser',
+    regex: [
+      /level-jobs\/package\.json$/
+    ],
+    hack: function(file, contents) {
+      var pkg
+      try {
+        pkg = JSON.parse(contents)
+      } catch (err) {
+        console.log('failed to parse:', file)
+        return
+      }
+
+      if (pkg.browser) {
+        delete pkg.browser
+        return JSON.stringify(pkg, null, 2)
+      }
+    }
+  },
+  {
     name: 'browser_field',
     regex: [
       /package\.json$/
     ],
-    hack: function(file, contents) {
+    hack: function (file, contents) {
       var pkg
       try {
         pkg = JSON.parse(contents)
@@ -67,135 +87,110 @@ var hackers = [
     }
   },
   // {
-  //   name: 'version',
+  //   name: 'net',
   //   regex: [
-  //     /\.js$/
+  //     /bittorrent-swarm\/package\.json$/,
+  //     /portfinder\/package\.json$/
   //   ],
-  //   hack: function(file, contents) {
-  //     var fixed = contents
-  //     var matchPkg;
-  //     do {
-  //       matchPkg = fixed.match(/require\('?"?([^'"\)]*?package\.json)'?"?\)/)
-  //       if (matchPkg) {
-  //         var pkgPath = path.join(path.dirname(file), matchPkg[1])
-  //         var pkg
-  //         try {
-  //           pkg = require(pkgPath)
-  //         } catch (err) {
-  //           console.warn('failed to hack', file)
-  //           break;
-  //         }
+  //   hack: function (file, contents) {
+  //     var pkg
+  //     try {
+  //       pkg = JSON.parse(contents)
+  //     } catch (err) {
+  //       console.log('failed to parse:', file)
+  //       return
+  //     }
 
-  //         fixed = fixed.replace(matchPkg[0], JSON.stringify(pkg))
-  //       }
-  //     } while (matchPkg)
-
-  //     return fixed
+  //     rewireMain(pkg)
+  //     if (pkg.browser.net !== 'utp') {
+  //       pkg.browser.net = 'utp'
+  //       return JSON.stringify(pkg, null, 2)
+  //     }
   //   }
   // },
-  {
-    name: 'net',
-    regex: [
-      /bittorrent-swarm\/package\.json$/,
-      /portfinder\/package\.json$/
-    ],
-    hack: function(file, contents) {
-      var pkg
-      try {
-        pkg = JSON.parse(contents)
-      } catch (err) {
-        console.log('failed to parse:', file)
-        return
-      }
+  // {
+  //   name: 'fs',
+  //   regex: [
+  //     /bitkeeper-js\/package\.json$/,
+  //     /glob\/package\.json$/,
+  //     /random-access-file\/package\.json$/,
+  //     /chained-chat\/package\.json$/,
+  //     /pump\/package\.json$/,
+  //     /mime\/package\.json$/,
+  //     /walk\/package\.json$/,
+  //     /is-file\/package\.json$/,
+  //     /rimraf\/package\.json$/,
+  //     /webtorrent\/package\.json$/,
+  //     /formidable\/package\.json$/,
+  //     /mkdirp\/package\.json$/,
+  //     /load-ip-set\/package\.json$/,
+  //     /portfinder\/package\.json$/,
+  //     /tradle-utils\/package\.json$/,
+  //     /create-torrent\/package\.json$/,
+  //     /form-data\/package\.json$/,
+  //     /blockloader\/package\.json$/,
+  //     /chained-obj\/package\.json$/
+  //   ],
+  //   hack: function (file, contents) {
+  //     var pkg
+  //     try {
+  //       pkg = JSON.parse(contents)
+  //     } catch (err) {
+  //       console.log('failed to parse:', file)
+  //       return
+  //     }
 
-      rewireMain(pkg)
-      if (pkg.browser.net !== 'utp') {
-        pkg.browser.net = 'utp'
-        return JSON.stringify(pkg, null, 2)
-      }
-    }
-  },
-  {
-    name: 'fs',
-    regex: [
-      /bitkeeper-js\/package\.json$/,
-      /glob\/package\.json$/,
-      /random-access-file\/package\.json$/,
-      /pump\/package\.json$/,
-      /mime\/package\.json$/,
-      /walk\/package\.json$/,
-      /rimraf\/package\.json$/,
-      /webtorrent\/package\.json$/,
-      /formidable\/package\.json$/,
-      /mkdirp\/package\.json$/,
-      /load-ip-set\/package\.json$/,
-      /portfinder\/package\.json$/,
-      /tradle-utils\/package\.json$/,
-      /create-torrent\/package\.json$/,
-      /form-data\/package\.json$/,
-      /blockloader\/package\.json$/,
-      /chained-obj\/package\.json$/
-    ],
-    hack: function(file, contents) {
-      var pkg
-      try {
-        pkg = JSON.parse(contents)
-      } catch (err) {
-        console.log('failed to parse:', file)
-        return
-      }
+  //     rewireMain(pkg)
+  //     if (pkg.browser.fs !== 'react-native-level-fs') {
+  //       pkg.browser.fs = 'react-native-level-fs'
+  //       return JSON.stringify(pkg, null, 2)
+  //     }
+  //   }
+  // },
+  // {
+  //   name: 'dgram',
+  //   regex: [
+  //     /sock-plex\/package\.json$/,
+  //     /utp\/package\.json$/,
+  //     /bittorrent-dht\/package\.json$/,
+  //     /zlorp\/package\.json$/,
+  //     /dns\.js\/package\.json$/
+  //   ],
+  //   hack: function (file, contents) {
+  //     var pkg
+  //     try {
+  //       pkg = JSON.parse(contents)
+  //     } catch (err) {
+  //       console.log('failed to parse:', file)
+  //       return
+  //     }
 
-      rewireMain(pkg)
-      if (pkg.browser.fs !== 'react-native-level-fs') {
-        pkg.browser.fs = 'react-native-level-fs'
-        return JSON.stringify(pkg, null, 2)
-      }
-    }
-  },
-  {
-    name: 'dgram',
-    regex: [
-      /sock-jack\/package\.json$/,
-      /utp\/package\.json$/,
-      /bittorrent-dht\/package\.json$/,
-      /zlorp\/package\.json$/,
-      /dns\.js\/package\.json$/
-    ],
-    hack: function(file, contents) {
-      var pkg
-      try {
-        pkg = JSON.parse(contents)
-      } catch (err) {
-        console.log('failed to parse:', file)
-        return
-      }
-
-      rewireMain(pkg)
-      if (pkg.browser.dgram !== 'react-native-udp') {
-        pkg.browser.dgram = 'react-native-udp'
-        return JSON.stringify(pkg, null, 2)
-      }
-    }
-  },
+  //     rewireMain(pkg)
+  //     if (pkg.browser.dgram !== 'react-native-udp') {
+  //       pkg.browser.dgram = 'react-native-udp'
+  //       return JSON.stringify(pkg, null, 2)
+  //     }
+  //   }
+  // },
   {
     name: 'simpleget',
     regex: [
       /simple\-get\/index\.js$/
     ],
-    hack: function(file, contents) {
-      var hack = ";res.headers = res.headers || {};"
+    hack: function (file, contents) {
+      var hack = ';res.headers = res.headers || {};'
       if (contents.indexOf(hack) !== -1) return
 
       return contents.replace(
         "if (['gzip', 'deflate'].indexOf(res.headers['content-encoding']) !== -1) {",
-          hack +
-          "if (['gzip', 'deflate'].indexOf(res.headers['content-encoding']) !== -1) {"
+        hack +
+        "if (['gzip', 'deflate'].indexOf(res.headers['content-encoding']) !== -1) {"
       )
     }
   }
 ]
 
-function hackFiles() {
+function hackFiles () {
   var finder = find('./node_modules')
 
   finder.on('file', function (file) {
@@ -203,22 +198,22 @@ function hackFiles() {
       || /\/tests?\//.test(file)) return
 
     // var parts = file.split('/')
-    // var idx = 0
-    // // var idx = parts.indexOf(path.basename(__dirname))
-    // while ((idx = parts.indexOf('node_modules', idx)) !== -1) {
-    //   var dep = parts[idx + 1]
-    //   var parentPkgPath = idx === 0 ? './package.json' :
-    //     path.join(parts.slice(0, idx).join('/'), 'package.json')
-    //   parentPkgPath = path.resolve(parentPkgPath)
-    //   var parentPkg = require(parentPkgPath)
-    //   if (!(dep in parentPkg.dependencies)) return
+      // var idx = 0
+      // // var idx = parts.indexOf(path.basename(__dirname))
+      // while ((idx = parts.indexOf('node_modules', idx)) !== -1) {
+      //   var dep = parts[idx + 1]
+      //   var parentPkgPath = idx === 0 ? './package.json' :
+      //     path.join(parts.slice(0, idx).join('/'), 'package.json')
+      //   parentPkgPath = path.resolve(parentPkgPath)
+      //   var parentPkg = require(parentPkgPath)
+      //   if (!(dep in parentPkg.dependencies)) return
 
     //   parts.unshift() // node_modules
-    //   parts.unshift() // dep
-    // }
+      //   parts.unshift() // dep
+      // }
 
-    var matchingHackers = hackers.filter(function(hacker) {
-      return hacker.regex.some(function(regex) {
+    var matchingHackers = hackers.filter(function (hacker) {
+      return hacker.regex.some(function (regex) {
         return regex.test(file)
       })
     })
@@ -235,13 +230,13 @@ function hackFiles() {
     //   }
     // }
     // else {
-      fs.readFile(file, { encoding: 'utf8' }, onread)
+    fs.readFile(file, { encoding: 'utf8' }, onread)
     // }
 
-    function onread(err, str) {
+    function onread (err, str) {
       if (err) throw err
 
-      var hacked = matchingHackers.reduce(function(hacked, hacker) {
+      var hacked = matchingHackers.reduce(function (hacked, hacker) {
         return hacker.hack(file, hacked || str) || hacked
       }, str)
 
@@ -250,10 +245,10 @@ function hackFiles() {
         fs.writeFile(file, hacked)
       }
     }
-  });
+  })
 }
 
-function rewireMain(pkg) {
+function rewireMain (pkg) {
   if (typeof pkg.browser === 'string') {
     var main = pkg.browser
     pkg.browser = {}
