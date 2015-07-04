@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
-// var shelljs = require('shelljs')
 // shelljs.exec('force-dedupe-git-modules')
-var fs = require('fs')
+var proc = require('child_process')
+var fs = require('fs-extra')
 var find = require('findit')
 var path = require('path')
 // var thisPkg = require('./package.json')
+
+var otrPath = path.resolve('./node_modules/chained-chat/node_modules/zlorp/node_modules/otr')
+var raisedOtrPath = path.resolve('./node_modules/otr')
 
 // function loadDeps() {
 //   var pkgs = []
@@ -193,6 +196,15 @@ var hackers = [
 function hackFiles () {
   var finder = find('./node_modules')
 
+  finder.on('directory', function (file) {
+    file = path.resolve(file)
+    if (/\/node_modules\/otr$/.test(file) && file !== raisedOtrPath) {
+      fs.remove(file, function (err) {
+        if (err) throw err
+      })
+    }
+  })
+
   finder.on('file', function (file) {
     if (!/\.(js|json)$/.test(file)
       || /\/tests?\//.test(file)) return
@@ -259,4 +271,11 @@ function rewireMain (pkg) {
   }
 }
 
-hackFiles()
+if (fs.existsSync(otrPath)) {
+  fs.move(otrPath, raisedOtrPath, function (err) {
+    if (err) throw err
+
+    hackFiles()
+  })
+}
+else hackFiles()
